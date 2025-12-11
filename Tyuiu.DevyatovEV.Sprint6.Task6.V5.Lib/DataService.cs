@@ -12,22 +12,19 @@ namespace Tyuiu.DevyatovEV.Sprint6.Task6.V5.Lib
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Файл не найден: {path}");
 
-            string[] lines = File.ReadAllLines(path);
+            string content = File.ReadAllText(path);
             StringBuilder result = new StringBuilder();
 
-            foreach (string line in lines)
-            {
-                string[] words = line.Split(new[] { ' ', '\t', ',', '.', '!', '?', ';', ':', '-', '(', ')', '[', ']', '{', '}', '"', '\'' },
-                    StringSplitOptions.RemoveEmptyEntries);
+            char[] separators = new char[] { ' ', '\t', '\r', '\n', ',', '.', '!', '?', ';', ':', '-', '(', ')', '[', ']', '{', '}', '"', '\'' };
+            string[] words = content.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (string word in words)
+            foreach (string word in words)
+            {
+                if (word.IndexOf('l') >= 0 || word.IndexOf('L') >= 0)
                 {
-                    if (word.Contains("l") || word.Contains("L"))
-                    {
-                        if (result.Length > 0)
-                            result.Append(" ");
-                        result.Append(word);
-                    }
+                    if (result.Length > 0)
+                        result.Append(" ");
+                    result.Append(word);
                 }
             }
 
