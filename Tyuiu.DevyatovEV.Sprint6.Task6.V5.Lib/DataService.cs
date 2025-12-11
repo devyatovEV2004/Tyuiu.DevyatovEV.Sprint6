@@ -20,7 +20,7 @@ namespace Tyuiu.DevyatovEV.Sprint6.Task6.V5.Lib
 
             foreach (string word in words)
             {
-                if (word.IndexOf('l') >= 0 || word.IndexOf('L') >= 0)
+                if (word.Contains("l"))
                 {
                     if (result.Length > 0)
                         result.Append(" ");
