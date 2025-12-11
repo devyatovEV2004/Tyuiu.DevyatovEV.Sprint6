@@ -22,8 +22,7 @@ namespace Tyuiu.DevyatovEV.Sprint6.Task6.V5.Lib
 
                 foreach (string word in words)
                 {
-                    // Ищем букву 'l' (регистронезависимо)
-                    if (word.IndexOf('l', StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (word.Contains("l") || word.Contains("L"))
                     {
                         if (result.Length > 0)
                             result.Append(" ");
