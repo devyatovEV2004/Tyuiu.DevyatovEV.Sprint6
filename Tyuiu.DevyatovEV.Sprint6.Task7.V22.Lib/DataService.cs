@@ -26,6 +26,8 @@ namespace Tyuiu.DevyatovEV.Sprint6.Task7.V22.Lib
                         throw new FormatException($"Неверный формат числа в строке {i + 1}, столбец {j + 1}: '{values[j]}'");
             }
 
+            matrix = ProcessMatrix(matrix);
+
             return matrix;
         }
 
