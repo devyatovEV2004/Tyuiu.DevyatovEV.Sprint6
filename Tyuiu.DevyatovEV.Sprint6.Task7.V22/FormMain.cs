@@ -1,111 +1,196 @@
-using System;
-using System.Data;
+п»їusing System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using Tyuiu.DevyatovEV.Sprint6.Task7.V22.Lib;
 
 namespace Tyuiu.DevyatovEV.Sprint6.Task7.V22
 {
     public partial class FormMain : Form
     {
-        string selectedPath = "";
-        DataService ds = new DataService();
-        int[,] matrix;
+        private string selectedFile = "";
 
-        public FormMain() => InitializeComponent();
+        public FormMain()
+        {
+            InitializeComponent();
+        }
 
-        private void buttonOpen_Click(object sender, EventArgs e)
+        // в•”в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•—
+        // в•‘         Р—РђР“Р РЈР—РљРђ CSV Р¤РђР™Р›Рђ          в•‘
+        // в•љв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ќ
+        private void buttonLoad_Click(object sender, EventArgs e)
         {
             try
             {
                 OpenFileDialog ofd = new OpenFileDialog
                 {
-                    Filter = "CSV файлы (*.csv)|*.csv|Все файлы (*.*)|*.*",
-                    Title = "Выберите файл с матрицей",
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                    Filter = "CSV С„Р°Р№Р»С‹ (*.csv)|*.csv|Р’СЃРµ С„Р°Р№Р»С‹ (*.*)|*.*",
+                    Title = "Р’С‹Р±РµСЂРёС‚Рµ CSV С„Р°Р№Р»"
                 };
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    selectedPath = ofd.FileName;
-                    matrix = ds.GetMatrix(selectedPath);
-                    dataGridViewIn.DataSource = ToDataTable(matrix);
+                    selectedFile = ofd.FileName;
+
+                    LoadMatrixToGrid(selectedFile);
+
+                    labelFileInfo.Text = "Р¤Р°Р№Р»: " + Path.GetFileName(selectedFile);
                     buttonProcess.Enabled = true;
-                    string fileName = Path.GetFileName(selectedPath);
-                    labelFileInfo.Text = $"Загружен файл: {fileName} | Размер: {matrix.GetLength(0)}x{matrix.GetLength(1)}";
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show($"Ошибка при загрузке файла:\n{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("РћС€РёР±РєР° РїСЂРё Р·Р°РіСЂСѓР·РєРµ С„Р°Р№Р»Р°!", "РћС€РёР±РєР°",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // Р—Р°РіСЂСѓР·РєР° CSV РІ DataGridView
+        private void LoadMatrixToGrid(string path)
+        {
+            var lines = File.ReadAllLines(path);
+            dataGridViewIn.Rows.Clear();
+            dataGridViewIn.Columns.Clear();
+
+            int cols = lines[0].Split(';').Length;
+
+            for (int i = 0; i < cols; i++)
+                dataGridViewIn.Columns.Add("col" + i, "РЎС‚РѕР»Р±РµС† " + (i + 1));
+
+            foreach (var line in lines)
+                dataGridViewIn.Rows.Add(line.Split(';'));
+        }
+
+        // в•”в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•—
+        // в•‘        РћР‘Р РђР‘РћРўРљРђ РњРђРўР РР¦Р«             в•‘
+        // в•љв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ќ
         private void buttonProcess_Click(object sender, EventArgs e)
         {
-            try
+            if (dataGridViewIn.Rows.Count == 0)
             {
-                if (matrix == null)
-                {
-                    MessageBox.Show("Сначала выберите файл с матрицей!", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                int[,] resultMatrix = ds.ProcessMatrix(matrix);
-                dataGridViewOut.DataSource = ToDataTable(resultMatrix);
-                ConfigureDataGridView(dataGridViewOut);
-
-                SaveFileDialog sfd = new SaveFileDialog
-                {
-                    Filter = "CSV файлы (*.csv)|*.csv|Все файлы (*.*)|*.*",
-                    FileName = "OutPutFileTask7V22.csv",
-                    Title = "Сохранить результат",
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                };
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    ds.SaveMatrix(resultMatrix, sfd.FileName);
-                    MessageBox.Show($"Файл успешно сохранен:\n{sfd.FileName}", "Сохранение завершено", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                MessageBox.Show("РЎРЅР°С‡Р°Р»Р° Р·Р°РіСЂСѓР·РёС‚Рµ С„Р°Р№Р»!", "РћС€РёР±РєР°",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch (Exception ex)
+
+            dataGridViewOut.Rows.Clear();
+            dataGridViewOut.Columns.Clear();
+
+            foreach (DataGridViewColumn col in dataGridViewIn.Columns)
+                dataGridViewOut.Columns.Add(col.Name, col.HeaderText);
+
+            // 6-Р№ СЃС‚РѕР»Р±РµС† = РёРЅРґРµРєСЃ 5
+            int targetCol = 5;
+
+            foreach (DataGridViewRow row in dataGridViewIn.Rows)
             {
-                MessageBox.Show($"Ошибка при обработке матрицы:\n{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (row.IsNewRow) continue;
+
+                object[] newRow = new object[row.Cells.Count];
+
+                for (int i = 0; i < row.Cells.Count; i++)
+                {
+                    int value = int.Parse(row.Cells[i].Value.ToString());
+
+                    if (i == targetCol && value > 0 && value % 2 == 0)
+                        newRow[i] = 111;
+                    else
+                        newRow[i] = value;
+                }
+
+                dataGridViewOut.Rows.Add(newRow);
+            }
+
+            buttonSave.Enabled = true;
+        }
+
+        // в•”в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•—
+        // в•‘             РЎРћРҐР РђРќР•РќРР• CSV           в•‘
+        // в•љв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ќ
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewOut.Rows.Count == 0)
+            {
+                MessageBox.Show("РќРµС‚ РґР°РЅРЅС‹С… РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ!", "РћС€РёР±РєР°");
+                return;
+            }
+
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Filter = "CSV С„Р°Р№Р»С‹ (*.csv)|*.csv",
+                FileName = "OutPutFileTask7.csv"
+            };
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                {
+                    foreach (DataGridViewRow row in dataGridViewOut.Rows)
+                    {
+                        if (row.IsNewRow) continue;
+
+                        var cells = row.Cells.Cast<DataGridViewCell>()
+                            .Select(c => c.Value.ToString());
+
+                        sw.WriteLine(string.Join(";", cells));
+                    }
+                }
+
+                MessageBox.Show("Р¤Р°Р№Р» СѓСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅС‘РЅ!", "Р“РѕС‚РѕРІРѕ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
+        // в•”в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•—
+        // в•‘              Рћ РџР РћР“Р РђРњРњР•             в•‘
+        // в•љв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ќ
         private void buttonInfo_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Спринт 6 | Task 7 | Вариант 22\nВыполнил: Девятов Егор Владимирович\n\nПрограмма загружает матрицу из CSV файла.\nВ шестом столбце заменяет положительные четные элементы на 111.\nРезультат сохраняется в CSV файл.", "Информация о программе", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Form f = new Form
+            {
+                Text = "Рћ РїСЂРѕРіСЂР°РјРјРµ",
+                Size = new Size(580, 300),
+                StartPosition = FormStartPosition.CenterScreen,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false
+            };
+
+            PictureBox pic = new PictureBox
+            {
+                Image = Image.FromFile(@"C:\Users\РРІР°РЅ\source\repos\Tyuiu.DevyatovEV.Sprint6\img\my_photo.jpg"),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Size = new Size(140, 180),
+                Location = new Point(20, 20)
+            };
+
+            Label lbl = new Label
+            {
+                Text =
+                    "Р”РµРІСЏС‚РѕРІ Р•РіРѕСЂ\n" +
+                    "9 РєР»Р°СЃСЃ\n" +
+                    "РЎРїСЂРёРЅС‚ 6 вЂ” Task 7 вЂ” Р’Р°СЂРёР°РЅС‚ 22\n" +
+                    "РўРРЈ, 2025",
+                Location = new Point(180, 40),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11)
+            };
+
+            Button ok = new Button
+            {
+                Text = "OK",
+                Size = new Size(80, 30),
+                Location = new Point(450, 210),
+                DialogResult = DialogResult.OK
+            };
+
+            f.Controls.Add(pic);
+            f.Controls.Add(lbl);
+            f.Controls.Add(ok);
+
+            f.AcceptButton = ok;
+
+            f.ShowDialog();
         }
 
-        private DataTable ToDataTable(int[,] array)
-        {
-            int rows = array.GetLength(0), cols = array.GetLength(1);
-            DataTable dt = new DataTable();
-            for (int c = 0; c < cols; c++) dt.Columns.Add($"Столбец {c + 1}", typeof(string));
-            for (int r = 0; r < rows; r++)
-            {
-                DataRow dr = dt.NewRow();
-                for (int c = 0; c < cols; c++) dr[c] = array[r, c].ToString();
-                dt.Rows.Add(dr);
-            }
-            return dt;
-        }
-
-        private void ConfigureDataGridView(DataGridView dgv)
-        {
-            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgv.RowHeadersVisible = true;
-            dgv.ColumnHeadersVisible = true;
-            for (int i = 0; i < dgv.Rows.Count; i++) dgv.Rows[i].HeaderCell.Value = $"Строка {i + 1}";
-            dgv.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders);
-            if (dgv.Columns.Count > 5)
-            {
-                dgv.Columns[5].DefaultCellStyle.BackColor = System.Drawing.Color.LightYellow;
-                dgv.Columns[5].DefaultCellStyle.Font = new System.Drawing.Font(dgv.Font, System.Drawing.FontStyle.Bold);
-            }
-        }
     }
 }

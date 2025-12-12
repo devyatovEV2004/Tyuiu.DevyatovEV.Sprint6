@@ -7,114 +7,159 @@ namespace Tyuiu.DevyatovEV.Sprint6.Task6.V5
     partial class FormMain
     {
         private System.ComponentModel.IContainer components = null;
+
+        private GroupBox groupBoxTask;
+        private Label labelTask;
+
+        private GroupBox groupBoxIn;
+        private GroupBox groupBoxOut;
+
         private TextBox textBoxIn;
         private TextBox textBoxOut;
-        private Button buttonOpen;
+
+        private FlowLayoutPanel panelButtons;
+        private Button buttonLoad;
         private Button buttonProcess;
+        private Button buttonSave;
         private Button buttonInfo;
-        private Label labelIn;
-        private Label labelOut;
+
         private Label labelFileInfo;
-        private Label labelStats;
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && components != null)
                 components.Dispose();
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+
+            groupBoxTask = new GroupBox();
+            labelTask = new Label();
+
+            groupBoxIn = new GroupBox();
+            groupBoxOut = new GroupBox();
+
             textBoxIn = new TextBox();
             textBoxOut = new TextBox();
-            buttonOpen = new Button();
+
+            panelButtons = new FlowLayoutPanel();
+
+            buttonLoad = new Button();
             buttonProcess = new Button();
+            buttonSave = new Button();
             buttonInfo = new Button();
-            labelIn = new Label();
-            labelOut = new Label();
+
             labelFileInfo = new Label();
-            labelStats = new Label();
+
             SuspendLayout();
 
-            // Кнопка Открыть файл
-            buttonOpen.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonOpen.Location = new Point(20, 20);
-            buttonOpen.Size = new Size(150, 35);
-            buttonOpen.Text = "Открыть файл";
-            buttonOpen.Click += buttonOpen_Click;
+            // -------------------------
+            // groupBoxTask
+            // -------------------------
+            groupBoxTask.Text = "Условие задания";
+            groupBoxTask.Dock = DockStyle.Top;
+            groupBoxTask.Height = 80;
 
-            // Кнопка Обработать
-            buttonProcess.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonProcess.Location = new Point(180, 20);
-            buttonProcess.Size = new Size(150, 35);
-            buttonProcess.Text = "Обработать";
+            labelTask.Text = "Дан текстовый файл. Вывести все слова, содержащие букву 'l'.";
+            labelTask.Dock = DockStyle.Fill;
+            labelTask.Padding = new Padding(10);
+            labelTask.Font = new Font("Segoe UI", 10);
+
+            groupBoxTask.Controls.Add(labelTask);
+
+            // -------------------------
+            // panelButtons
+            // -------------------------
+            panelButtons.Dock = DockStyle.Top;
+            panelButtons.Height = 60;
+            panelButtons.Padding = new Padding(10);
+            panelButtons.FlowDirection = FlowDirection.LeftToRight;
+
+            string imgPath = @"C:\Users\Иван\source\repos\Tyuiu.DevyatovEV.Sprint6\img\";
+
+            Size btnSize = new Size(45, 45);
+
+            // buttonLoad
+            buttonLoad.Size = btnSize;
+            buttonLoad.BackgroundImage = Image.FromFile(imgPath + "folder_add.png");
+            buttonLoad.BackgroundImageLayout = ImageLayout.Stretch;
+            buttonLoad.Click += buttonLoad_Click;
+
+            // buttonProcess
+            buttonProcess.Size = btnSize;
+            buttonProcess.BackgroundImage = Image.FromFile(imgPath + "page_white_go.png");
+            buttonProcess.BackgroundImageLayout = ImageLayout.Stretch;
             buttonProcess.Enabled = false;
             buttonProcess.Click += buttonProcess_Click;
 
-            // Кнопка Информация
-            buttonInfo.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            buttonInfo.Location = new Point(760, 20);
-            buttonInfo.Size = new Size(35, 35);
-            buttonInfo.Text = "?";
+            // buttonSave
+            buttonSave.Size = btnSize;
+            buttonSave.BackgroundImage = Image.FromFile(imgPath + "save.png");
+            buttonSave.BackgroundImageLayout = ImageLayout.Stretch;
+            buttonSave.Enabled = false;
+            buttonSave.Click += buttonSave_Click;
+
+            // buttonInfo
+            buttonInfo.Size = btnSize;
+            buttonInfo.BackgroundImage = Image.FromFile(imgPath + "help.png");
+            buttonInfo.BackgroundImageLayout = ImageLayout.Stretch;
             buttonInfo.Click += buttonInfo_Click;
 
-            // Метка информации о файле
-            labelFileInfo.AutoSize = true;
-            labelFileInfo.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Italic, GraphicsUnit.Point);
-            labelFileInfo.ForeColor = Color.DarkBlue;
-            labelFileInfo.Location = new Point(340, 30);
+            panelButtons.Controls.Add(buttonLoad);
+            panelButtons.Controls.Add(buttonProcess);
+            panelButtons.Controls.Add(buttonSave);
+            panelButtons.Controls.Add(buttonInfo);
 
-            // Метка для исходного текста
-            labelIn.AutoSize = true;
-            labelIn.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            labelIn.Location = new Point(20, 70);
-            labelIn.Text = "Содержимое файла:";
+            // -------------------------
+            // groupBoxIn — text input
+            // -------------------------
+            groupBoxIn.Text = "Исходный текст";
+            groupBoxIn.Dock = DockStyle.Left;
+            groupBoxIn.Width = 480;
 
-            // TextBox для исходного текста
-            textBoxIn.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            textBoxIn.Location = new Point(20, 90);
             textBoxIn.Multiline = true;
-            textBoxIn.ReadOnly = true;
+            textBoxIn.Dock = DockStyle.Fill;
             textBoxIn.ScrollBars = ScrollBars.Vertical;
-            textBoxIn.Size = new Size(380, 350);
 
-            // Метка для результата
-            labelOut.AutoSize = true;
-            labelOut.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            labelOut.Location = new Point(420, 70);
-            labelOut.Text = "Слова, содержащие букву 'l':";
+            groupBoxIn.Controls.Add(textBoxIn);
 
-            // TextBox для результата
-            textBoxOut.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            textBoxOut.Location = new Point(420, 90);
+            // -------------------------
+            // groupBoxOut — result
+            // -------------------------
+            groupBoxOut.Text = "Результат";
+            groupBoxOut.Dock = DockStyle.Fill;
+
             textBoxOut.Multiline = true;
-            textBoxOut.ReadOnly = true;
+            textBoxOut.Dock = DockStyle.Fill;
             textBoxOut.ScrollBars = ScrollBars.Vertical;
-            textBoxOut.Size = new Size(380, 350);
 
-            // Метка статистики
-            labelStats.AutoSize = true;
-            labelStats.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Italic, GraphicsUnit.Point);
-            labelStats.ForeColor = Color.DarkGreen;
-            labelStats.Location = new Point(420, 450);
+            groupBoxOut.Controls.Add(textBoxOut);
 
-            // Настройки формы
-            ClientSize = new Size(820, 480);
-            Controls.Add(labelStats);
-            Controls.Add(textBoxOut);
-            Controls.Add(labelOut);
-            Controls.Add(textBoxIn);
-            Controls.Add(labelIn);
+            // -------------------------
+            // labelFileInfo
+            // -------------------------
+            labelFileInfo.AutoSize = true;
+            labelFileInfo.ForeColor = Color.DarkBlue;
+            labelFileInfo.Location = new Point(10, 140);
+
+            // -------------------------
+            // Main Form
+            // -------------------------
+            ClientSize = new Size(1000, 600);
+
+            Controls.Add(groupBoxOut);
+            Controls.Add(groupBoxIn);
             Controls.Add(labelFileInfo);
-            Controls.Add(buttonInfo);
-            Controls.Add(buttonProcess);
-            Controls.Add(buttonOpen);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            MinimizeBox = false;
+            Controls.Add(panelButtons);
+            Controls.Add(groupBoxTask);
+
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Спринт 6 | Task 6 | Вариант 5 | Девятов Е.В.";
+            Text = "Спринт 6 | Задание 6 | Вариант 5 | Девятов Е.В.";
+            MinimumSize = new Size(1000, 600);
+
             ResumeLayout(false);
             PerformLayout();
         }

@@ -24,12 +24,8 @@ namespace Tyuiu.DevyatovEV.Sprint6.Task5.V29.Lib
                 {
                     if (double.TryParse(part.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
                     {
-                        num = Math.Round(num, 3, MidpointRounding.AwayFromZero);
-
-                        if (num >= 10)
-                        {
-                            numbers.Add(num);
-                        }
+                        // Добавляем ВСЕ числа из файла
+                        numbers.Add(Math.Round(num, 3, MidpointRounding.AwayFromZero));
                     }
                 }
             }
